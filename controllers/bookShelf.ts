@@ -1,14 +1,8 @@
 import express, {Request,Response} from "express";
 import Books from "../model/schema";
-import AWS from 'aws-sdk';
 
 const app = express();
-const s3 = new AWS.S3();
-AWS.config.update({
-    accessKeyId: process.env.AWS_API_KEY,
-    secretAccessKey: process.env.AWS_API_SECRET,
-    region: process.env.AWS_REGION_NAME
-});
+
 export const getAllBooks = async(req: Request, res: Response) =>{
     try {
         const getBook = await Books.find();        
@@ -25,24 +19,6 @@ export const addBook = async (req:any, res: Response) => {
         if(searchBook){
             throw "Book Already found"
         }  
-        let imageUrl;
-        // if (req.file) {
-        //     const fileContent = req.file.buffer; 
-        //     const params = {
-        //         Bucket: 'your-bucket-name',
-        //         Key: 'example.jpg',
-        //         Body: fileContent
-        //     };
-        //     const uploadResult = await s3.upload(params,(err: any, data: any) => {
-        //             if (err) {
-        //                 console.error(err);
-        //             } else {
-        //                 console.log('File uploaded successfully:', data.Location);
-        //             }
-        //         })   
-        //         console.log(uploadResult, "------");
-        //         imageUrl = uploadResult
-        // }
         const highestBook = await Books.findOne().sort({ id: -1 });
         let currentID = highestBook ? Number(highestBook.id) + 1 : 0;
         const adding = await Books.create({
@@ -52,7 +28,6 @@ export const addBook = async (req:any, res: Response) => {
           genre: genre,
           available: available,
           id: currentID,
-        //   image: imageUrl,
         });        
         return res.status(200).json({"message": "Book added", "books":adding})
      } catch (error) {        
