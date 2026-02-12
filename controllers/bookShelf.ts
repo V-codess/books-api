@@ -20,8 +20,8 @@ export const getAllBooks = async(req: Request, res: Response) =>{
 
 export const addBook = async (req:any, res: Response) => {
      try {
-        const {name, author, genre, available, price, image} = req.body;
-        const searchBook = await Books.findOne({name: name});
+        const {title, author, genre, available, price, image} = req.body;
+        const searchBook = await Books.findOne({title: title});
         if(searchBook){
             throw "Book Already found"
         }  
@@ -46,7 +46,7 @@ export const addBook = async (req:any, res: Response) => {
         const highestBook = await Books.findOne().sort({ id: -1 });
         let currentID = highestBook ? Number(highestBook.id) + 1 : 0;
         const adding = await Books.create({
-          name: name,
+          title: title,
           price: price,
           author: author,
           genre: genre,
@@ -102,3 +102,47 @@ export const deleteBook = async (req: Request, res: Response) => {
         return res.status(400).json({"message":"error finding the book by this id", error})
     }
 }
+
+export const getBooksPagination = async (req: Request, res: Response) => {
+  try {
+    const {page, limit, title, author, genre, available}= req.query
+    const pageNum = Number(page) || 1;
+    const limits = Number(limit) || 5;
+
+    const skip = (pageNum - 1) * limits;
+
+    const filter: any = {};
+
+    if (title) {
+      filter.title = { $regex: title, $options: "i" };
+    }
+
+    if (author) {
+      filter.author = { $regex: author, $options: "i" };
+    }
+     if (genre) {
+      filter.genre = { $regex: genre, $options: "i" };
+    }
+     if (available) {
+      filter.available = available === "true";
+    }
+
+    const total = await Books.countDocuments(filter);
+
+    const books = await Books.find(filter)
+      .skip(skip)
+      .limit(limits);
+
+    return res.status(200).json({
+      data: books,
+      total,
+      page: pageNum,
+      totalPages: Math.ceil(total / limits),
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+

@@ -1,7 +1,7 @@
 import mongoose,  { model, Schema } from "mongoose";
 
 const bookSchema = new Schema({
-  name:{
+  title:{
     type: String,
   },
   author:{
@@ -10,7 +10,7 @@ const bookSchema = new Schema({
   genre:{
     type: String,
     enum:{
-        values: ["suspense", "horror", 'sci-fi', 'comedy', 'romance', 'action']
+        values: ["suspense", "horror", 'sci-fi', 'comedy', 'romance', 'action','education']
     }
   },
   available:{

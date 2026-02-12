@@ -7,7 +7,7 @@ import cors from "cors";
 import swaggerUi from 'swagger-ui-express';
 import { apiDocumentation } from './docs/apidocs';
 
-const port = 8080 || process.env.PORT
+const port =  Number(process.env.PORT) || 8080
 dotenv.config();
 
 const app = express();
@@ -23,7 +23,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(apiDocumentation));
 
 const startServer = async() =>{
     try {
-        const url: any = process.env.URL;
+        const url: string = process.env.URL || "";
         await database(url);
         app.listen(port, ()=> console.log(`Running server at ${port}`))
     } catch (error) {
