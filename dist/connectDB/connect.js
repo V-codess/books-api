@@ -15,6 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const database = (url) => __awaiter(void 0, void 0, void 0, function* () {
     mongoose_1.default.set("strictQuery", false);
-    return yield mongoose_1.default.connect(url).then(() => console.log('server connected to the database')).catch((error) => console.log('error connecting DB:', error));
+    return yield mongoose_1.default
+        .connect(url)
+        .then(() => console.log("server connected to the database"))
+        .catch((error) => console.log("error connecting DB:", error));
 });
 exports.default = database;
